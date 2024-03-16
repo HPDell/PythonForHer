@@ -2,16 +2,16 @@ project:
   type: website
   output-dir: _site
 
+author: HPDell
+
 website:
-  title: "Python 教程"
+  title: "Python For Her"
   sidebar:
     contents: 
-      - text: 首页
+      - text: 简介
         file: index.qmd
-      - text: "1 变量"
-        file: 01-Variables.qmd
-      - text: "2 流程控制"
-        file: 02-process-control.qmd
+      - section: Python 基础
+        contents: 01-Basics/*
   page-navigation: true
 
 format:
@@ -29,6 +29,5 @@ format:
 lang: zh
 
 execute: 
-  freeze: auto
   echo: true
 
