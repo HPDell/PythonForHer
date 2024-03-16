@@ -249,11 +249,11 @@ not False
 ```
 
 ```{python}
-1.0 and False
+1.0 and True
 ```
 
 ```{python}
-0 and 1
+0 and True
 ```
 
 `0` 被认为是 `False`
@@ -447,7 +447,7 @@ a_function(arg1=value1, arg2=value2)
 ## 例子
 
 ::: {.callout-note}
-现在用包含两个元素的元组 `(a, b)` 表示坐标，计算两组坐标之间的距离的平方导数（反距离加权）。
+现在用包含两个元素的元组 `(a, b)` 表示坐标，计算两组坐标之间的距离的平方倒数（反距离加权）。
 
 ```{python}
 point1 = (0, 0)
@@ -596,7 +596,7 @@ page = 2
 
 ```{python}
 def page_num(page_size, total):
-    return total // page_size + int(total % page_size)
+    return total // page_size + int(total % page_size > 0)
 
 def offset(page_size, page):
     return page_size * (page - 1)
