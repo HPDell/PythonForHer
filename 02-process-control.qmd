@@ -1,0 +1,173 @@
+---
+title: "程序流程控制"
+description: "条件语句、循环语句和推导式"
+---
+
+# 条件语句
+
+如果程序需要根据一定条件执行不同的操作，那么就需要使用条件语句
+
+:::: {.columns}
+::: {.column width="33%"}
+```python
+if condition1:
+    expression1
+else
+    expression0
+```
+:::
+::: {.column width="33%"}
+```python
+if condition1:
+    expression1
+elif condition2:
+    expression2
+elif condition2:
+    expression2
+else
+    expression0
+```
+:::
+::: {.column width="33%"}
+```python
+if condition1:
+    expression1
+    if condition2:
+        expression2
+    else condition3:
+        expression3
+else
+    expression0
+```
+:::
+::::
+
+- `elif` 可以有任意多个，也可以是 0 个
+- `if-else` 结构可以嵌套
+- **注意保持缩进**
+
+---
+
+::: {.callout-note}
+根据二手房的建成年份判断是不是 10 年以上的老房子。
+如果是，标记为 `"aged10"`；如果不是，标记为 `"new"`。
+:::
+
+```{python}
+def is_old_property(built_year, current_year=2024):
+    if (current_year - built_year) > 10:
+        return "aged10"
+    else:
+        return "new"
+
+is_old_property(2010)
+```
+
+其实上面可以写成 `if else` 三元运算符的形式
+
+```{python}
+"aged10" if (2024 - 2010) > 10  else "new"
+```
+
+---
+
+::: {.callout-note}
+根据二手房的建成年份进行房龄分级。
+- 如果是 20 年以上，标记为 `"aged20"`
+- 如果是 10 年以上，标记为 `"aged10"`
+- 如果 10 年以下，标记为 `"new"`
+:::
+
+. . .
+
+```{python}
+def proeprty_age_label(built_year, current_year=2024):
+    if (current_year - built_year) > 20:
+        return "aged20"
+    elif (current_year - built_year) > 10:
+        return "aged10"
+    else:
+        return "new"
+
+print(proeprty_age_label(2000))
+print(proeprty_age_label(2010))
+print(proeprty_age_label(2020))
+```
+
+# 循环语句（for）
+
+循环语句其实有两种，`for` 循环和 `while` 循环。`for` 循环也被称为迭代。
+
+```python
+for item in iterable:
+    # 对 item 执行一些操作
+```
+
+放在 `iterable` 位置上的一定是可以迭代的。
+一般 `list` `dict` `set` `tuple` 都是可以迭代的。
+
+---
+
+::: {.callout-note}
+现在有一批房子的建成年份，根据这些年份进行分级。
+
+```{python}
+prop_years = [1998, 2005, 2007, 2012, 2016, 2019]
+```
+:::
+
+```{python}
+for item in prop_years:
+    print(proeprty_age_label(item))
+```
+
+---
+
+与循环语句类似，由一个叫“**列表推导式**”的语法，可以从一个列表得到另一个列表。
+也可以设置一些条件。
+
+```python
+[opeartion(x) for x in iterable]
+[opeartion(x) for x in iterable if condition]
+```
+
+上面的例子可以直接使用列表推导式
+
+```{python}
+[proeprty_age_label(item) for item in prop_years]
+```
+
+::: {.callout-tip}
+相应的还有集合推导式、字典推导式等。
+:::
+
+# 循环语句 (while)
+
+```python
+while (condition):
+    operations
+```
+
+- 当 `condition` 是 `True` 时，执行 `operations` 的操作；
+- 每次执行完 `operations` 的操作，检查 `condition` 是否还满足；
+  - 如果 `condition` 仍然满足，再次执行 `operations` 的操作，然后再检查；
+  - 一旦 `condition` 不满足了，就不再执行 `operations` 的操作。
+
+---
+
+::: {.callout-note}
+计算一个正整数的阶乘。
+:::
+
+```{python}
+def factorial(x):
+    result = 1
+    while x > 0:
+        result = x * result
+        x = x - 1
+    return result
+
+factorial(5)
+```
+
+

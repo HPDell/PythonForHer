@@ -1,0 +1,34 @@
+project:
+  type: website
+  output-dir: _site
+
+website:
+  title: "Python 教程"
+  sidebar:
+    contents: 
+      - text: 首页
+        file: index.qmd
+      - text: "1 变量"
+        file: 01-Variables.qmd
+      - text: "2 流程控制"
+        file: 02-process-control.qmd
+  page-navigation: true
+
+format:
+  html:
+    theme: cosmo
+    number-sections: true
+    toc: true
+  revealjs:
+    theme: night
+    chalkboard: true
+    width: 1200
+    height: 700
+    output-ext: slide.html
+
+lang: zh
+
+execute: 
+  freeze: auto
+  echo: true
+

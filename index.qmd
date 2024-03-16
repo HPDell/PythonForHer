@@ -1,0 +1,20 @@
+---
+format:
+  html:
+    theme:
+      dark: darkly
+      light: flatly
+listing: 
+  type: grid
+  fields: 
+    - title
+    - description
+  contents: 
+    - 01-Variables.qmd
+---
+
+# 首页
+
+写给女朋友的 Python 教程。
+
+

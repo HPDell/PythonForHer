@@ -1,0 +1,652 @@
+---
+title: "变量"
+description: 介绍变量的概念、创建、运算，以及函数运算
+---
+
+# 什么是变量
+
+## 已知数和未知数
+
+数学中，我们一般讲“已知数”和“未知数”。
+比如 $x$ 一般表示未知数，$c$ 一般表示已知数。
+这两个符号和数字一样是可以参与运算的。
+
+$$
+y = ax + 1
+$$
+
+这个时候 $a$ 可以是常量，表示斜率。
+
+## 变量和常量
+
+- 在计算机中，不论是已知数也好、未知数也好，都得是能在硬盘上、内存中表示的数，也就是必须都是确定的。这是计算机的原理决定的。
+- 只不过有些量可以是变化的，有些是固定的。
+- 可以变的就是变量，不能变的就是常量。
+
+::: {.callout-important}
+在 Python 中，没有真正的常量。
+:::
+
+## 如何表示变量 {.smaller}
+
+在 Python 中变量都要有一个名字，这个名字是一组连在一起的字母、数字或者下划线，但是不能以数字开头，
+也不能是 Python 中已有的一些关键词。
+
+:::: {.columns}
+
+::: {.column width="50%"}
+合法的
+
+- `model1`
+- `_table`
+- `property_price2018`
+- `Property`
+:::
+
+::: {.column width="50%"}
+不合法的
+
+- `1_model`
+- `.table`
+- `property-price2018`
+- `Property(a)`
+:::
+
+::::
+
+关键词
+
+`and as assert break class continue def del elif else except `
+
+`False finally for from global if import in is lambda None `
+
+`nonlocal not or pass raise return True try while with yield `
+
+## 变量类型 {.smaller}
+
+|          | 类型名 | 符号 | 例子 |
+| -------- | ------ | ---  | ---- |
+| 单个变量 | 整数 | `int` | 1, 2, 3 |
+|          | 浮点数 | `float` | 1.2, $1\times 10^{-2}$, 1e-2 |
+|          | 逻辑 | `bool` | `True`, `False` |
+| 一组变量 | 字符串 | `str` | "abc", "hello", "world" |
+|          | 列表   | `list` | `[1,2,3]`, `[1,1.1,"1.23"]` |
+|          | 集合   | `set`  | `{1,2,3}` |
+|          | 元组   | `tuple` | `(1,2,3)` |
+| 某种结构 | 字典 | `dict` | `{'a': 1, 'b': 2}` |
+|          | 自定义的 | | 日期、复数等，被称为“类” |
+
+: {tbl-colwidths="[20, 20, 20, 40]"}
+
+::: {.fragment}
+- 字符串本身是其实是一个字符的列表，但是往往将其当做一个特殊的单变量使用
+- 集合中不能有重复元素，元组的长度是确定的
+:::
+
+## 创建变量
+
+只要写一个变量名，然后用 `=` 给其赋值，就可以创建一个变量
+
+```{python}
+# 整数
+year = 2024
+# 浮点数
+price = 15243.42
+# 字符串
+city = 'zhengzhou'
+# 列表
+districts = ['jinshui', 'erqi', 'huiji', 'gaoxin', 'zhengdong']
+# 字典
+district_name = {
+  'jinshui': '金水',
+  'erqi': '二七',
+  'huiji': '惠济',
+  'gaoxin': '高新',
+  'zhengdong': '郑东'
+}
+```
+
+## 删除变量
+
+- 通常情况下，创建的变量无需手动删除。
+- 如果要删除变量，使用 `del <变量名>` 的方式
+
+```{python}
+del year
+```
+
+- 也可以删除列表中的某一个元素
+
+```{python}
+del districts[0]
+districts
+```
+
+::: {.callout-note}
+此处 `districts[0]` 中的 `[0]` 是列表索引，从 0 开始。
+也就是 0 代表第一个元素，1 代表第 2 个元素……
+:::
+
+# 变量运算
+
+所有运算都需要使用运算符。
+不同类型的变量可以进行的运算是不一样的。
+
+## 运算符
+
+- 所有运算符都表示一种运算，也就是一种数学意义上的函数。
+- 既然是函数，就要有“自变量”，被称为运算符的**操作数**。
+- 通常操作数的个数为 1 和 2，Python 很少有 3 个操作数的运算符。
+- 同一个运算符，操作数不同，执行的运算也不同
+
+---
+
+- 二元运算符
+
+```python
++  -  *  /  **  //  > < >= <= == != =
+and or in
+```
+
+- 一元运算符
+
+```python
+not * **
+```
+
+- 三元运算符
+
+```python
+a if b else c
+```
+
+- 括号运算符
+
+```python
+() [] {}
+```
+
+## 整数、浮点数、逻辑值
+
+:::: {.columns}
+::: {.column width="30%"}
+
+```{python}
+a = 5
+b = 3
+a ** b
+```
+
+```{python}
+a // b
+```
+
+```{python}
+a > 3
+```
+
+```{python}
+b > 3
+```
+
+```{python}
+a >= 3
+```
+
+```{python}
+a == 5
+```
+
+```{python}
+a != 5
+```
+
+:::
+::: {.column width="35%"}
+
+```{python}
+a += 2
+a
+```
+
+```{python}
+True and True
+```
+
+```{python}
+True and False
+```
+
+```{python}
+False and False
+```
+
+```{python}
+True or True
+```
+
+```{python}
+True or False
+```
+
+```{python}
+False or False
+```
+
+:::
+::: {.column width="35%"}
+
+```{python}
+a % b
+```
+
+```{python}
+not True
+```
+
+```{python}
+not False
+```
+
+```{python}
+1.0 and False
+```
+
+```{python}
+0 and 1
+```
+
+`0` 被认为是 `False`
+
+其他被认为是 `True`
+
+:::
+::::
+
+## 列表
+
+:::: {.columns}
+::: {.column}
+
+```{python}
+a = [1, 2, 3]
+b = [10, 11, 12]
+a + b
+```
+
+```{python}
+a and b
+```
+
+```{python}
+a > b
+```
+
+```{python}
+a < b
+```
+
+列表第一个元素被用于执行逻辑运算
+
+```{python}
+[*a, *b]
+```
+
+:::
+::: {.column}
+
+```{python}
+a * 2
+```
+
+```{python}
+1 in a
+```
+
+```{python}
+10 in a
+```
+
+```{python}
+a[0]
+```
+
+```{python}
+a[1] = 9
+a
+```
+
+```{python}
+a[0:2]
+```
+
+:::
+::::
+
+## 字典
+
+:::: {.columns}
+::: {.column width="55%"}
+
+```{python}
+district_name['jinshui']
+```
+
+```{python}
+district_name['gongyi'] = '巩义'
+district_name
+```
+
+```{python}
+district_name['zengdong'] = '郑东新区'
+district_name
+```
+
+:::
+::: {.column width="45%"}
+
+```{python}
+{
+  **district_name,
+  'guancheng': '管城'
+}
+```
+
+```{python}
+'jinshui' in district_name
+```
+:::
+::::
+
+## 字符串
+
+:::: {.columns}
+::: {.column}
+字符串支持列表的操作
+
+```{python}
+city
+```
+
+```{python}
+city[0:5]
+```
+
+```{python}
+city * 3
+```
+
+```{python}
+city + '2024'
+```
+
+每个字符本身都对应了一个非负整数
+
+```{python}
+'abc' > 'ABC'
+```
+
+:::
+::: {.column}
+
+变量可以通过某种格式转换为字符串
+
+```{python}
+year = 2024
+f"Properties in {city} in {year}"
+```
+
+:::
+::::
+
+## 函数
+
+如果运算符不能满足计算需求，则可以编写函数。
+
+函数包含三个部分：
+
+- 函数名：与变量命名要求相同
+- 参数列表：一系列变量名，用逗号分隔
+- 函数体：函数的计算过程。如果函数有计算结果，用 `return` 将结果返回。
+
+```python
+def 函数名(参数列表):
+    函数体
+```
+
+```python
+def a_function(arg1, arg2):
+    # 对 arg1 和 arg2 执行一些操作或者计算
+    value = arg1 + arg2
+    return value
+```
+
+---
+
+### 函数调用
+
+使用 `()` 运算符调用函数，将实际用于执行函数的参数一一对应放在 `()` 中，即按位置传递。
+
+```python
+a_function(value1, value2)
+```
+
+也可以写出参数名赋值
+
+```python
+a_function(arg1=value1, arg2=value2)
+```
+
+::: {.callout-note}
+- 声明函数时所写的参数列表中的参数相当于未知数，被称为“形参”。本身并不具有任何值，类似于一个占位符。
+  只有当函数被调用的时候才能确定其值。
+- 调用函数时所写的参数列表中的参数是已知的，被称为“实参”。本身的值必须可以被确定。
+- 一个函数的形参可以传入另一个函数的形参。
+:::
+
+---
+
+### 例子
+
+::: {.callout-note}
+现在用包含两个元素的元组 `(a, b)` 表示坐标，计算两组坐标之间的距离的平方导数（反距离加权）。
+
+```{python}
+point1 = (0, 0)
+point2 = (1, 1)
+1 / ((point1[0] - point2[0]) ** 2 + (point1[1] - point2[1]) ** 2)
+```
+:::
+
+写成函数就可以重复利用上面的过程
+
+```{python}
+def idw(p1, p2, power):
+    return 1 / ((p1[0] - p2[0]) ** 2 + (p1[1] - p2[1]) ** 2) ** (power / 2)
+
+idw(point1, point2, 2)
+```
+
+---
+
+也可以分步写地更清晰
+
+```{python}
+def idw2(p1, p2, power):
+    squared_distance = (p1[0] - p2[0]) ** 2 + (p1[1] - p2[1]) ** 2
+    powered_distance = squared_distance ** (power / 2)
+    return 1 / powered_distance
+
+idw2(point1, point2, 2)
+```
+
+
+::: {.fragment}
+参数还可以给一个默认值，这样如果取默认值，就无需再设置参数  
+
+```{python}
+def idw3(p1, p2, power=2):
+    squared_distance = (p1[0] - p2[0]) ** 2 + (p1[1] - p2[1]) ** 2
+    powered_distance = squared_distance ** (power / 2)
+    return 1 / powered_distance
+
+idw3(point1, point2)
+```
+::: 
+
+---
+
+### 一些内置的函数
+
+数学运算
+
+```
+abs(x) divmod(x, y) max(a, b, c) min(a, b, c) pow(x, a) round(a)
+sum([a, b]) all([a, b]) any([a, b])
+```
+
+创建某种类型的变量或转换为某种类型
+
+```
+int(a) float(a) list({a, b}) set([a, b]) dict() str()
+```
+
+列表操作
+
+```
+长度 len([a, b])   排序 sorted([a, b])   反转 reversed([a, b])
+生成序列 range(start, stop, step)        组合列表 zip([a, b], [c, d])
+枚举列表 enumerate([a, b])               筛选 filter([a, b])
+```
+
+其他
+
+```
+打印值 print()    字符串表示法 repr()
+```
+
+---
+
+### 函数调用函数
+
+一个函数可以调用另一个函数，将自己的形参传递到另一个函数中。
+
+```{python}
+def relative_absolute_error(error, observe):
+    '''
+    相对误差绝对值
+    '''
+    return abs(error) / abs(observe)
+```
+
+也可以自己调用自己，称为递归函数。
+
+```{python}
+def factorial_recursive(x):
+    return x * factorial_recursive(x - 1) if x > 0 else 1
+```
+
+::: {.callout-caution}
+慎用递归函数，必须设置递归结束条件，否则会无限递归。
+:::
+
+---
+
+### 几个特殊的参数
+
+- `*args`：捕获一系列按位置传递的参数，并放在名为 `args` 的元组中。
+- `**kwargs`：捕获一系列按名称传递的参数，并放在名为 `kwargs` 的字典中。
+- `/`：该参数之前的所有参数必须按位置传递。
+- `*`：该参数之后的所有参数必须按名称传递。
+
+```{python}
+def average(*args):
+    print(args)
+    return sum(args) / len(args)
+
+average(1,2,3,4,5)
+```
+
+# 案例
+
+## 网络爬虫计算爬取页数 {.smaller}
+
+在编写网络爬虫时，通常是获取一个列表作为摘要信息，然后再针对列表的每一项爬取其详细信息。
+这样的列表可能有很多，但是很多时候不能知道到底有多少。
+但是项目的总数是固定的。
+比如爬取一个城市的二手房房价，通常网站会告诉我们一共有多少二手房 `total`，每页显示多少二手房 `page_size`。
+在爬取每一页时，我们需要计算出这一页第一个项目是总项目中的第几个 `offset`，告诉服务器，然后服务器才会根据 `page_size` 返回一个新的列表。
+因此我们需要写一些辅助函数。
+
+1. 根据二手房总数和每页显示的数量确定到底有多少页。
+2. 根据当前爬取的页数 `page` （从 1 开始） 计算偏移量 `offset` （从 0 开始）
+
+测试数据：
+
+```{python}
+page_size = 20
+total = 836
+page = 2
+```
+
+--- 
+
+::: {.callout-tip}
+1. 用 `total` 整除 `page_size` 则为能完全显示 `page_size` 个项目的页数，再判断余数是不是大于 0。如果大于 0，则说明还有多余的项目，页数再+1。
+2. 将当前 `page` 减去 1，再乘以 `page_size`，就是当前页面第一个项目在总项目中的顺序（从 0 开始）
+:::
+
+```{python}
+def page_num(page_size, total):
+    return total // page_size + int(total % page_size)
+
+def offset(page_size, page):
+    return page_size * (page - 1)
+
+print(page_num(page_size, total))
+print(offset(page_size, page))
+```
+
+## 空间位置唯一值 {.smaller}
+
+在爬取二手房房价数据时，每个挂牌销售的二手房的位置通常只精确到小区，且只保留小数点后 6 位。
+小区会有一些指标，比如绿化率、容积率、物业费等，是非常重要的。
+于是我们需要想办法将住宅本身和其所在小区关联起来。
+但是如果通过名字进行关联，有时候会出现两个小区名字比较相似的情况，
+也会出现小区名字不匹配的问题。
+因此更好的办法是根据空间坐标进行匹配。
+这就需要将坐标转化为单个唯一值，便于关联。
+
+1. 通过一个函数将一个坐标值输入转化为一个输出，使这个字符串能够最大可能保留输入值的唯一性。
+2. 通过一个函数判断两个输入坐标是否是可以匹配的。
+
+```{python}
+location1 = (114.213412, 20.667654)
+location2 = (114.213422, 20.668654)
+```
+
+---
+
+::: {.callout-tip}
+计算机中的小数存在一定的误差，原理上就不能表示的非常精确，这被称为浮点误差。
+如果直接使用数字本身进行比较，浮点误差容易导致 `5 != 5` 的情况出现。
+所以要按照一定的方法进行转换后再比较。
+:::
+
+```{python}
+def coords_id(loc):
+    return f"{round(loc[0], 6)}-{round(loc[1], 6)}"
+
+def coords_id_compare(loc1, loc2):
+    return coords_id(loc1) == coords_id(loc2)
+
+print(coords_id(location1))
+print(coords_id_compare(location1, location2))
+```
+
+# 下节
+
+程序流程控制
+
+- 条件语句（`if-else`）
+- 循环验收（`for` 和 `while`）
