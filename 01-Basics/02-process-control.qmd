@@ -5,7 +5,9 @@ description: "条件语句、循环语句和推导式"
 
 # 条件语句
 
-如果程序需要根据一定条件执行不同的操作，那么就需要使用条件语句
+如果程序需要根据一定条件执行不同的操作，就需要使用条件语句
+
+## 格式
 
 :::: {.columns}
 ::: {.column width="33%"}
@@ -42,16 +44,17 @@ else
 :::
 ::::
 
+- `condition` 条件表达式的结果必须是 `bool` 类型
 - `elif` 可以有任意多个，也可以是 0 个
 - `if-else` 结构可以嵌套
 - **注意保持缩进**
 
 ---
 
-::: {.callout-note}
-根据二手房的建成年份判断是不是 10 年以上的老房子。
+### 案例：根据房龄进行分类标记
+
+> 根据二手房的建成年份判断是不是 10 年以上的老房子。
 如果是，标记为 `"aged10"`；如果不是，标记为 `"new"`。
-:::
 
 ```{python}
 def is_old_property(built_year, current_year=2024):
@@ -63,20 +66,12 @@ def is_old_property(built_year, current_year=2024):
 is_old_property(2010)
 ```
 
-其实上面可以写成 `if else` 三元运算符的形式
-
-```{python}
-"aged10" if (2024 - 2010) > 10  else "new"
-```
-
 ---
 
-::: {.callout-note}
-根据二手房的建成年份进行房龄分级。
-- 如果是 20 年以上，标记为 `"aged20"`
-- 如果是 10 年以上，标记为 `"aged10"`
-- 如果 10 年以下，标记为 `"new"`
-:::
+> 根据二手房的建成年份进行房龄分级。
+如果是 20 年以上，标记为 `"aged20"`；
+如果是 10 年以上，标记为 `"aged10"`；
+如果 10 年以下，标记为 `"new"`。
 
 . . .
 
@@ -94,27 +89,146 @@ print(proeprty_age_label(2010))
 print(proeprty_age_label(2020))
 ```
 
-# 循环语句（for）
+---
 
-循环语句其实有两种，`for` 循环和 `while` 循环。`for` 循环也被称为迭代。
+### 案例：校验数据
+
+> 上次我们定义了一个函数，根据二手房总数和每页显示的数量计算总页数。
+> 
+> ```python
+> def page_num(page_size, total):
+>     return total // page_size + int(total % page_size > 0)
+> ```
+> 
+> 但是有一个隐藏条件： `page_size` 的值不能是 0，而且一般也不能超过 20。
+> 修改这个函数，当条件不满足时，返回 0 。
+
+::: {.callout-tip}
+- 这里需要用到条件运算符 `and or` 等。
+- 
+:::
+
+---
+
+```{python}
+def page_num(page_size, total):
+    if page_size > 0 and page_size <= 20:
+        return total // page_size + int(total % page_size > 0)
+    else:
+        return 0
+
+print(page_num(0, 100))
+print(page_num(1000, 845))
+print(page_num(20, 845))
+```
+
+::: {.callout-note}
+这里事实上使用 `0` 作为一种错误代码。
+一般情况下，`page_num` 为 0 ，表示没有页，属于一种错误情况。
+这种情况下，我们就可以停止爬虫。
+:::
+
+## 缩进
+
+Python 中通过缩进区分不同层级的代码。
+
+- `:` 后就表示开始一个新的层级
+- 缩进可以使用空格（Space）或者制表符（Tab）
+
+:::: {.columns}
+::: {.column}
+
+![](./assets/python-space-indent.png)
+
+:::
+::: {.column}
+
+![](./assets/python-tab-indent.png)
+
+:::
+::::
+
+## 短路判断
+
+当 `if` 语句中的条件由很多部分组成时，Python 一般从左到右逐个判断。
+但是当某一个语句的结果判断完成后，如果后面的判断无法改变这个结果，Python 就不再继续判断了。
+
+- 当多个判断由 `or` 连接，其中一个是 `True` 时，触发短路，结果是 `True`
+- 当多个判断由 `and` 连接，其中一个是 `False` 时，触发短路，结果是 `False`
+
+这个特性可以保证可读性和正确性。
+
+---
+
+### 案例：空字符串
+
+> 通常情况下，如果一个变量的值可以是 `None`，那么我们称这个变量是可空变量。
+> 但是对于字符串，不一定只有值是 `None` 的字符串才是空字符串。
+> 值是 `""` 的字符串实际上也是空字符串。
+> 写一个函数，判断一个字符串实际上是不是“空”字符串。
+
+```{python}
+def is_null_str(value):
+    if (value is None) or (len(value) == 0):
+        return True
+    else:
+        return False
+
+print(is_null_str(None))
+print(is_null_str(""))
+print(is_null_str("abc"))
+```
+
+---
+
+### 案例：非空字符串
+
+> 同样的问题，但是写一个函数判断是不是非空字符串。
+
+```{python}
+def not_null_str(value):
+    if (value is not None) and (len(value) > 0):
+        return True
+    else:
+        return False
+
+print(not_null_str(None))
+print(not_null_str(""))
+print(not_null_str("abc"))
+```
+
+# 循环语句
+
+如果要对一组变量执行同样的操作，可以使用循环语句。
+循环语句有两种，`for` 循环和 `while` 循环。
+
+## For 循环
+
+For 循环又称“迭代”，是最常用的一种循环。
 
 ```python
 for item in iterable:
     # 对 item 执行一些操作
 ```
 
-放在 `iterable` 位置上的一定是可以迭代的。
-一般 `list` `dict` `set` `tuple` 都是可以迭代的。
+::: {.callout-important}
+
+- `item` 是循环变量，依次从 `iterable` 中取一个值。
+- 放在 `iterable` 位置上的一定是可以迭代的。
+  - 一般 `list` `dict` `set` `tuple` 都是可以迭代的。
+  - 函数 `range` 的返回值也是可以迭代的
+  - `enumerate` `zip` 的返回值也是可以迭代的
+:::
 
 ---
 
-::: {.callout-note}
-现在有一批房子的建成年份，根据这些年份进行分级。
+### 案例：批量房龄分级
+
+> 现在有一批房子的建成年份，根据这些年份进行分级。
 
 ```{python}
 prop_years = [1998, 2005, 2007, 2012, 2016, 2019]
 ```
-:::
 
 ```{python}
 for item in prop_years:
@@ -122,6 +236,199 @@ for item in prop_years:
 ```
 
 ---
+
+### 案例：查找因数
+
+> 写一个函数，输出一个整数除了1和它本身以外的所有因数。
+
+```{python}
+def fractions(value):
+    for i in range(2, value):
+        if value % i == 0:
+            print(i)
+
+fractions(24)
+```
+
+```{python}
+fractions(15)
+```
+
+## While 循环
+
+当循环范围无法确定，只能确定循环执行的条件，使用 `while` 循环。
+
+```python
+while (condition):
+    operations
+```
+
+- 当 `condition` 是 `True` 时，执行 `operations` 的操作；
+- 每次执行完 `operations` 的操作，检查 `condition` 是否还满足；
+  - 如果 `condition` 仍然满足，再次执行 `operations` 的操作，然后再检查；
+  - 一旦 `condition` 不满足了，就不再执行 `operations` 的操作。
+
+---
+
+### 案例：阶乘
+
+> 计算一个正整数的阶乘。
+
+
+```{python}
+def factorial(x):
+    result = 1
+    while x > 0:
+        result = x * result
+        x = x - 1
+    return result
+
+factorial(5)
+```
+
+::: {.callout-note}
+- 避免了递归函数，提高了计算性能。
+- 更便于读懂程序。
+:::
+
+---
+
+### 案例：级数
+
+> 计算几何级数 $y = \sum_{i=0}^\infty \frac{1}{2^i}$ 的数值，精度为 $1 \times 10^{-6}$。
+> 也就是说，当计算结果的变化不超过 $1 \times 10^{-6}$ 时，停止计算。
+
+```{python}
+def geometric_progression(base=2, eps=1e-6):
+    result0 = 0
+    result = 1
+    power = 0
+    while (result - result0) > eps:
+        result0 = result
+        power = power + 1
+        result = result + 1.0 / (base ** power)
+    return result
+
+geometric_progression()
+```
+
+## 循环嵌套
+
+循环里面也可以写循环，但是要注意循环变量不要重复。
+这种循环被称为多重循环。
+
+```python
+for i in range(0, 10):
+    for j in range(0, 10):
+        print((i, j))
+```
+
+多重循环有的时候不得不用，但是尽量减少使用。
+
+- Python 的效率并不是很高，循环嵌套层数太多影响效率。
+- 循环层数越多，代码越难以维护和分析。
+
+---
+
+### 案例：查找质数
+
+> 给定一个最大值，查找不大于该最大值的自然数中的质数。
+
+:::: {.columns}
+::: {.column}
+
+```{python}
+def prime_number(upper):
+    if upper <= 1:
+        return []
+    elif upper == 2:
+        return [2]
+    primes = []
+    for i in range(2, upper + 1):
+        has_factor = False
+        for j in range(2, i):
+            if i % j == 0:
+                has_factor = True
+        if not has_factor:
+            primes = primes + [i]
+    return primes
+```
+
+:::
+::: {.column}
+
+```{python}
+prime_number(20)
+```
+
+```{python}
+prime_number(50)
+```
+
+::: {.callout-warning}
+当输入值越来越大时，得到结果的过程也会越来越慢。
+:::
+
+:::
+::::
+
+## 中断和继续
+
+在循环中，使用 `break` `continue` 两个关键词可以主动控制循环的走向。
+
+- `break` 使循环立刻终止，不再执行循环体内后面的语句，直接回到循环体外。
+- `continue` 跳过这一次循环中后面的语句，直接进入下一次循环。
+
+通常和判断语句一起使用。
+
+---
+
+### 案例：有限制的级数计算
+
+> 计算之前那个几何级数，
+> 但是要求迭代次数不超过 10 次，如果超过了，就直接返回当前的结果。
+
+```{python}
+def geometric_progression2(base=2, eps=1e-6, max_iter=10):
+    result0 = 0
+    result = 1
+    power = 0
+    it = 0
+    while (result - result0) > eps:
+        result0 = result
+        power = power + 1
+        result = result + 1.0 / (base ** power)
+        if it >= 10:
+            break
+    return result
+
+geometric_progression2()
+```
+
+---
+
+### 案例：处理二手房均价
+
+> 房地产交易平台上，通常只有别墅的房价是以总价的形式显示的，其他都是按单位面积均价显示。
+> 编写一个函数，将所有价格统一处理成单位面积均价的形式。
+> 房地产信息由字典给出。
+
+```{python}
+def process_price(property_list):
+    for item in property_list:
+        if item['type'] != '别墅':
+            continue
+        item['price'] = item['price'] / item['size']
+```
+
+::: {.callout-important}
+- `continue` 并不是总是非常必要，通过调整判断条件大多数情况下都可以避免。
+- 一般只有当处理非常复杂、代码嵌套层级很多时，在处理开始前使用 `continue`，可以减少嵌套层级。
+:::
+
+# 推导式
+
+## 列表推导式
 
 与循环语句类似，由一个叫“**列表推导式**”的语法，可以从一个列表得到另一个列表。
 也可以设置一些条件。
@@ -140,34 +447,5 @@ for item in prop_years:
 ::: {.callout-tip}
 相应的还有集合推导式、字典推导式等。
 :::
-
-# 循环语句 (while)
-
-```python
-while (condition):
-    operations
-```
-
-- 当 `condition` 是 `True` 时，执行 `operations` 的操作；
-- 每次执行完 `operations` 的操作，检查 `condition` 是否还满足；
-  - 如果 `condition` 仍然满足，再次执行 `operations` 的操作，然后再检查；
-  - 一旦 `condition` 不满足了，就不再执行 `operations` 的操作。
-
----
-
-::: {.callout-note}
-计算一个正整数的阶乘。
-:::
-
-```{python}
-def factorial(x):
-    result = 1
-    while x > 0:
-        result = x * result
-        x = x - 1
-    return result
-
-factorial(5)
-```
 
 
