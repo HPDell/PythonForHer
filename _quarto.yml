@@ -16,7 +16,9 @@ website:
 
 format:
   html:
-    theme: cosmo
+    theme:
+      dark: darkly
+      light: flatly
     number-sections: true
     toc: true
   revealjs:

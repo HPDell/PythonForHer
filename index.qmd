@@ -1,17 +1,13 @@
 ---
 title: 简介
-format:
-  html:
-    theme:
-      dark: darkly
-      light: flatly
 listing: 
-  type: grid
-  fields: 
-    - title
-    - description
-  contents: 
-    - 01-Variables.qmd
+  - id: list-basics
+    type: grid
+    fields: 
+      - title
+      - description
+    contents: 
+      - 01-Basics
 ---
 
 <!-- # 首页 {.unnumbered} -->
@@ -20,6 +16,8 @@ listing:
 每个教程都包含一个文档版和演示文稿版。
 点击右侧“其他格式”下面的“RevealJS”可以查看演示文稿版。
 
-# 索引 {.unnumbered}
+# Python 基础
 
+:::{#list-basics}
+:::
 
