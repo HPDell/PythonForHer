@@ -444,8 +444,190 @@ def process_price(property_list):
 [proeprty_age_label(item) for item in prop_years]
 ```
 
-::: {.callout-tip}
-相应的还有集合推导式、字典推导式等。
+::: {.callout-important}
+列表推导式非常重要！
 :::
 
+---
+
+### 优势
+
+- 这种处理称为“向量化处理”，相比于循环语句，效率更高。
+- 对于简单的处理，列表推导式更易读。
+- 不仅可以做一维循环，也可以做多维循环。
+
+### 劣势
+
+- 多维循环时不易理解和阅读。
+- 执行处理复杂时代码会比较长，不便于调试。
+
+---
+
+### 案例：根据坐标生成唯一标识
+
+> 现在有一组坐标，精确到小数点后 6 位，按照之前的方法转换成唯一标识。
+
+```{python}
+coords = [(112.2452, 20.45456), (112.456127, 20.145678), (112.976825, 30.142501)]
+```
+
+:::{.fragment}
+```{python}
+[f"{round(c[0], 6)}-{round(c[1], 6)}" for c in coords]
+```
+:::
+
+:::{.fragment}
+我们也可以将循环变量直接展开为两个元素，这种语法被称为“解包”。
+
+```{python}
+[f"{round(lon, 6)}-{round(lat, 6)}" for lon, lat in coords]
+```
+:::
+
+---
+
+### 案例：向量内积
+
+> 给两个向量（默认为列向量），计算内积 $\mathbf{x}^\mathrm{T} \mathbf{y}$。
+> 如果 $\mathbf{x}=(x_1,x_2,\cdots,x_n)$， $\mathbf{y}=(y_1,y_2,\cdots,y_n)$，
+> 那么 $\mathbf{x}^\mathrm{T} \mathbf{y} = \sum_{i=1}^n x_i y_i$。
+
+
+```{python}
+x = [1,2,3]
+y = [4,5,6]
+```
+
+::: {.callout-tip}
+- 使用 `zip` 可以将两个列表并列。
+:::
+
+::: {.fragment}
+```{python}
+sum([xi * yi for xi, yi in zip(x, y)])
+```
+:::
+
+---
+
+### 案例：莱布尼兹级数计算圆周率
+
+> 莱布尼兹级数 $1 - \frac{1}{3} + \frac{1}{5} - \frac{1}{7} + \frac{1}{9} + \cdots = \frac{\pi}{4}$ 。
+> 只计算前 100 项的和并乘以 4。
+
+::: {.fragment}
+```{python}
+(1 + sum([((-1) ** i) / (2 * i + 1) for i in range(1, 100)])) * 4
+```
+:::
+
+---
+
+### 案例：计算向量累积和
+
+> 假设一个向量有 $n$ 个元素，计算从第一个元素开始到每个元素位置的累积和。
+> 比如，$[1,2,3]$ 的累积和是 $[1,3,6]$。
+
+::: {.callout-tip}
+- 解包时可以使用 `_` 表示不需要的元素。
+- `enumerate` 可以获取元素的序号。
+:::
+
+::: {.fragment}
+```{python}
+def accumulate(vec):
+    return [sum(vec[0:(i+1)]) for i, _ in enumerate(vec)]
+
+accumulate([1,2,3])
+```
+:::
+
+## 字典推导式
+
+类似于列表推导式，字典推导式如下
+
+```python
+{key_operation(x): value_operation(x) for x in iterable}
+{key_operation(x): value_operation(x) for x in iterable if condition}
+```
+
+需要注意的是：
+
+- 不论是 `key_operation` 还是 `value_operation` 都可以和 `x` 无关
+- `key_operation(x)` 的结果必须是一种“可哈希”的类型，包括 `int` `float` `str` `bool` `tuple` 以及其他所有具有自定义哈希方法的类型。
+
+::: aside
+哈希的具体原理暂时不用深究，记住这几个类型即可。
+:::
+
+---
+
+### 案例：元组列表转字典
+
+> 现在有一组元组构成的列表，元组有三个元素，分别表示小区名、小区均价和物业费。
+> 为了便于读取，将元组列表转换成字典，以小区名为键，值是字典 `{'avg_price': price, 'management': fee}`
+
+```{python}
+communities = [('A', 1.2, 1.2), ('b', 2.3, 1.3)]
+```
+
+::: {.fragment}
+
+```{python}
+{x[0]: {'avg_price': x[1], 'management': x[2]} for x in communities}
+```
+
+:::
+
+---
+
+### 案例：字符串列表记录长度
+
+> 将字符串列表转换为字典，键是字符串，值是长度。
+
+```{python}
+tokens = [
+    'abcdefg',
+    '1927h3ksmfd',
+    '19lpwwodksj'
+]
+{i: len(i) for i in tokens}
+```
+
+::: {.callout-tip title="聚合查询"}
+实际中，我们会对数据进行分组，然后计算这个组的某个指标，比如数量、平均数等。
+
+- 每个小区里面有多少二手房
+- 每个省的基尼系数
+:::
+
+## 其他推导式
+
+### 集合推导式
+
+```python
+{opeartion(x) for x in iterable}
+{opeartion(x) for x in iterable if condition}
+```
+
+重复元素会自动被去除。
+
+### 元组推导式
+
+```python
+(opeartion(x) for x in iterable)
+(opeartion(x) for x in iterable if condition)
+```
+
+元组推导式的结果并不是一个元组，而是一个类似于 `range` 的生成器，并不会立刻求值。
+
+# 下节
+
+自定义类
+
+- 成员和方法
+- 构造函数
+- 属性
+- 静态函数
 
