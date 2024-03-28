@@ -198,6 +198,71 @@ appart1.total_rent(52)
 成员函数参数也可以有默认值。
 :::
 
+## 继承和派生
+
+通过扩展一个类（基类）得到另一个类（子类、派生类）的过程。
+
+```python
+class 派生类(基类):
+    // 类定义
+```
+
+::: {.callout-tip}
+1. 基类可以不止有一个，但最好只有一个。
+2. 子类中包含基类的所有变量和函数。
+3. 子类中的函数可以使用 `super()` 表示基类。
+4. 如果子类和基类有同样的变量或函数，子类中优先使用自己的。
+:::
+
+---
+
+例如
+
+::: {.columns}
+::: {.column width="58%"}
+
+```{python}
+class Animal:
+    def __init__(self, name):
+        self.name = name
+        self.appetited = 0
+        self.starve = 0
+
+    def eat(self, volume):
+        self.starve += volume / self.appetited
+        self.starve = min([self.starve, 1])
+        return self.starve
+```
+
+:::
+::: {.column width="42%"}
+
+```{python}
+class Cat(Animal):
+    def __init__(self, name):
+        super().__init__(name)
+        self.appetited = 30
+    
+    def sound(self):
+        print("Meow!")
+```
+
+:::
+:::
+
+`Cat` 类型的变量就可以使用 `Animal` 的所有成员变量和成员函数。
+
+```{python}
+tcell = Cat("Tcell")
+print("Starve level: {0:.2f}%".format(tcell.starve * 100))
+print("after eat: {0:.2f}%".format(tcell.eat(20) * 100))
+```
+
+```{python}
+tcell.sound()
+```
+
+
 # 内置类
 
 Python 的一些内置类提供了很多方法。
@@ -318,5 +383,61 @@ a
 :::
 
 ## 字典
+
+::: {.columns}
+::: {.column}
+
+```{python}
+d = {
+    'name': '小区名称',
+    'developer': '开发商'
+}
+d.items()
+```
+
+```{python}
+d.keys()
+```
+
+```{python}
+d.values()
+```
+
+```{python}
+for key, value in d.items():
+    print(f"{key}={value}")
+```
+
+:::
+::: {.column}
+
+```{python}
+d.get('name', '默认名称')
+```
+
+```{python}
+d.get('city', '郑州')
+```
+
+```{python}
+d.update({'city': '郑州'})
+d
+```
+
+```{python}
+print(d.pop('city'))
+d
+```
+
+```{python}
+{}.fromkeys(['bed', 'bath'], 2)
+```
+
+:::
+:::
+
+# 异常
+
+这是一类特殊的类型，用于表示程序遇到了异常情况。
 
 

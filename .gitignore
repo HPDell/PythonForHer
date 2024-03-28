@@ -163,3 +163,4 @@ cython_debug/
 _site
 /.quarto/
 _freeze
+.ipynb
