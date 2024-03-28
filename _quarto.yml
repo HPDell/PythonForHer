@@ -26,10 +26,11 @@ format:
     chalkboard: true
     width: 1200
     height: 700
-    output-ext: slide.html
+    output-ext: slides.html
 
 lang: zh
 
 execute: 
   echo: true
+  freeze: auto
 
