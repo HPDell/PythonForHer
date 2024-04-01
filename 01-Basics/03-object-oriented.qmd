@@ -440,4 +440,122 @@ d
 
 这是一类特殊的类型，用于表示程序遇到了异常情况。
 
+## 什么情况下会遇到异常
 
+凡是代码无法正确执行的时候，就会抛出一个异常。
+
+- 除数为 0 的时候，抛出 `ZeroDivisionError` 。
+- 访问的列表元素超出了列表长度，抛出 `IndexError` 。
+- 参数的类型不对，抛出 `TypeError` 。
+- 使用的变量或函数找不到，抛出 `NameError` 。
+- 找不到指定文件，抛出 `FileNotFoundError` 。
+- 网页不存在（404），抛出 `HTTPError` 。
+- 网页超时无法打开，抛出 `ConnectTimeoutError` 。
+
+## raise 语句抛出异常
+
+在一些情况下，如果认为当前的情况是一种异常情况，可以使用 `raise` 手动抛出一个异常。
+这表示我们不对当前情况做任何处理，而是交给更上一层的代码块处理。
+
+```python
+raise ValueError("Some message")
+raise ValueError(("Some message", 2))
+```
+
+异常的构造函数通常都有一个参数，用来保存一些信息，这些信息被放在了 `args` 成员变量中。
+
+::: {.callout-tip}
+异常虽然有很多种类型，但不同类型之间在定义上没有太大的区别。
+使用不同异常类型的目的是指示这个异常的性质。
+比如当除数是 0 时，使用 `ZeroDivisionError` 就比 `ValueError` 更清晰的指出了异常的本质。
+:::
+
+---
+
+> 在写网络爬虫的时候，正常情况下会获得一个字典，其中有一个键名（字段）是 `data`，对应的键值表示要获取的数据，可以从中提取出我们需要的信息。
+> 但是有的时候可能会发生一些错误，此时这个字段就消失了。
+> 这时需要抛出一个 `ValueError` 的异常，表示获得的结果不对。
+
+```{python}
+def get_data(response):
+    if "data" not in response:
+        raise ValueError("Field 'data' not found in response")
+    data = response["data"]
+    return len(data)
+```
+
+```{python}
+response1 = {'status': 200, 'data': [{'name': '碧桂园'}, {'name': '万达'}]}
+get_data(response1)
+```
+
+```{python}
+#| error: true
+response2 = {'status': 404, 'message': 'Page not found.'}
+get_data(response2)
+```
+
+## try-except 语句捕获异常
+
+格式
+
+::: {.columns}
+::: {.column}
+
+```python
+try:
+    # Some code
+except:
+    # Deal with exception
+```
+
+:::
+::: {.column}
+
+```python
+try:
+    # Some code
+except SomeException:
+    # Deal with exception
+except AnotherException as e:
+    # Deal with exception
+    # using some info in e
+```
+
+:::
+:::
+
+::: {.callout-tip}
+- 如果不指定异常类型，则捕获所有类型的异常
+- 如果指定异常类型 A，也会捕获派生自 A 的类型的异常
+- 异常类型是从上至下匹配的
+:::
+
+---
+
+> 循环使用 `get_data` 函数处理下面的返回值列表，并处理的异常。
+> 当遇到异常时，输出一句话，显示是在处理哪个 `response` 时发生的异常。
+
+```{python}
+response_list = [response1, response2]
+```
+
+::: {.fragment}
+
+```{python}
+for i, res in enumerate(response_list):
+    try:
+        get_data(res)
+    except ValueError as e:
+        print(f"Value error raised at response {i}: {e.args[0]}")
+```
+
+:::
+
+
+# 下节
+
+模块
+
+- 安装模块
+- 常用模块
