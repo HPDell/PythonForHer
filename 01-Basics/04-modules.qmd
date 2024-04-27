@@ -1,0 +1,151 @@
+---
+title: "模块和包"
+description: "打包的一组类、函数和变量"
+---
+
+# 模块
+
+一个 Python 文件就是一个模块，这个模块可以由其他文件导入，并在其他 Python 文件中使用。
+
+## 模块示例
+
+创建一个 `list_prcess.py` 文件，内容如下
+
+```python
+def page_num(page_size, total):
+    return total // page_size + int(total % page_size > 0)
+
+def offset(page_size, page):
+    return page_size * (page - 1)
+
+def coords_id(loc):
+    return f"{round(loc[0], 6)}-{round(loc[1], 6)}"
+```
+
+不仅可以放函数，也可以放类。
+通过这种方式拆分代码，可以更好地组织代码。
+
+## 导入模块
+
+在其他文件中，通过下面的语句导入这个模块。有几种导入方式
+
+```python
+import list_process                 # 使用时用包名做前缀
+import list_process as lp           # 使用时以 lp 别名做前缀
+from list_process import *          # 导入所有函数，直接使用函数名
+from list_process import page_num   # 只能使用导入的函数，不能使用其他的
+```
+
+区别只在于函数调用地方式上
+
+::: columns
+::: column
+```{python}
+import list_process
+list_process.page_num(10, 210)
+```
+
+```{python}
+import list_process as lp
+lp.page_num(10, 210)
+```
+:::
+
+::: column
+```{python}
+from list_process import *
+page_num(10, 210)
+```
+
+```{python}
+from list_process import page_num
+page_num(10, 210)
+```
+:::
+:::
+
+## 符号 `__name__`
+
+::: {.callout-note title="模块化带来的一个问题"}
+导入模块时，该模块的所有代码都会被执行。
+所以通常模块中只声明函数和类，不会调用函数和类。
+这有时候会造成一定的问题：如果我们既想将函数作为模块提供给其他代码，又想直接使用 `python` 执行这个文件，并调用函数呢？
+:::
+
+可以通过变量 `__name__` 来区分该模块执行的方式。如果 `__name__ == "__main__"`，那么表示现在是直接使用 `python` 去执行，而不是作为模块导入。
+
+```python
+def page_num(page_size, total):
+    return total // page_size + int(total % page_size > 0)
+
+if __name__ == "__main__":
+    print(page_num(10, 210))
+```
+
+# 包
+
+一组具有一定文件结构模块构成了一个包。
+
+## 内置包
+
+绝大多数情况下我们都是使用 Python 提供的包。
+内置包有很多，比较常用的有
+
+- `csv` `json` `yaml` `toml` `pickle` 等读写文件的包
+- `os` `sys` `pathlib` 等与系统交互的包
+- `datetime` `time` 操作日期时间的包
+- `math` 进行数学运算
+- `logging` 输出日志
+- `dataclasses` 数据类
+- `re` 正则表达式
+
+## 第三方包
+
+Python 的强大之处就在于有浩如烟海的第三方包，例如
+
+- `numpy` `pandas` `geopandas` 等做矩阵运算和数据处理
+- `urllib` `requests` 等发送网络请求、处理数据的包
+- `tqdm` 显示进度条
+
+可以在 [https://pypi.org/](https://pypi.org/) 网站上搜索包。
+
+## 依赖项
+
+每个 Python 包和模块可能都需要使用一些其他的包，这些其他的包就被称为当前包的“依赖项”。
+根据约定，`requirements.txt` 文件列出了包的依赖项及其版本号。
+
+```
+django==3.2.12
+psycopg2>=2.9.3
+Pillow>=9.0.1
+sorl-thumbnail>=12.8.0
+```
+
+::: {.callout-tip}
+版本号也可以不指定。但通常要指定，避免版本不同的包提供的函数和类不同，导致当前包无法工作。
+:::
+
+## 包管理器
+
+由于每个包都可能有很多依赖项，一个一个手动安装显然是不现实的。
+`pip` 命令行程序是 Python 的包管理器，用来自动处理和安装包及其依赖项。
+但 `pip` 不是 Python 代码，因此不能在 Python 代码中使用，只能在终端命令行中使用。
+
+```powershell
+pip install urllib3 pandas  # 安装包
+pip uninstall pandas        # 卸载包
+```
+
+但在 Windows 上，有些包的安装可能会遇到问题。还有一些其他的包管理器可以使用，比如 Anaconda 、 Mamba 等。
+
+```powershell
+conda install pandas urllib3
+conda remove pandas
+```
+
+# 下节
+
+文件和文件系统
+
+- 文件格式
+- 文件操作
