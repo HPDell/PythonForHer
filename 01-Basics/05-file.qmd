@@ -92,7 +92,7 @@ with open("./assets/out.txt") as fout:
         print(row.strip())
 ```
 
-# CSV 文件
+# CSV 格式
 
 ## 文件格式
 
@@ -187,3 +187,74 @@ d.count()
 
 :::
 ::: 
+
+# JSON 格式
+
+## 文件格式
+
+JSON 全称是“JavaScript 对象表示法”，但往往与 Python 原生类型对应（虽然不是一一对应）。
+
+```json
+{
+    "actor": "赵丽颖",
+    "tv": [
+        {"title": "与凤行", "year": 2024, "collabrators": ["林更新"]},
+        {"title": "风吹半夏", "year": 2022, "collabrators": ["欧豪", "李光洁"]},
+        {"title": "谁是凶手", "year": 2021, "collabrators": ["肖央", "董子健"]},
+        {"title": "楚乔传", "year": 2017, "collabrators": ["林更新"]},
+        {"title": "花千骨", "year": 2015, "collabrators": ["霍建华"]}
+    ]
+}
+```
+
+JSON 格式在网页和网络请求中的使用非常普遍，几乎所有现代网络编程接口（API）都是以 JSON 格式传递数据的。
+因此该格式非常重要。
+
+## 读取和解析
+
+在 CSV 文件和纯文本文件中，我们主要使用的是读取器，通过不断读取文件内容执行操作。
+但 JSON 格式的文件通常不是一行一行地读取的，而是整个进行解析的。
+因此，需要首先读取文件全部内容，再按照 JSON 格式解析。
+可见，我们主要需要使用 JSON 解析器（Parser），而至于解析的对象是文件还是字符串就不是很重要了。
+
+反之也一样，通常 CSV 文件是一行一行写入的，但 JSON 文件需要整个写入，否则格式就出错了。
+因此需要生成全部文件内容，再全部写到文件中，这里需要的就是 JSON 格式字符串的“生成器”，也叫“序列化器”（Serializer）。
+
+Python 提供了包 `json` 用于解析和生成 JSON 字符日，但提供了直接操作文件的功能。
+
+## 解析
+
+使用 `load()` 函数直接解析 JSON 文件。
+
+```{python}
+import json
+with open("./assets/demo_json.json") as fin:
+    data = json.load(fin)
+    print(data)
+```
+
+也可以先读取文件为字符串再使用 `loads()` 解析。
+
+```{python}
+from pathlib import Path
+json.loads(Path("./assets/demo_json.json").read_text())
+```
+
+## 生成
+
+`dump()` 和 `dumps()` 分别用于生成 JSON 文件和字符串。
+
+```{python}
+json.dumps(demo_data, ensure_ascii=False)
+```
+
+```{python}
+with open("./assets/demo_json_out.json", mode="w") as fout:
+    json.dump(demo_data, fout, ensure_ascii=False)
+```
+
+也可以生成具有一定缩进格式的字符串
+
+```{python}
+print(json.dumps(demo_data, ensure_ascii=False, indent=4))
+```
