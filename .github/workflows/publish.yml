@@ -19,7 +19,7 @@ jobs:
           python-version: '3.10'
       - name: Install Dependencies
         run: |
-          pip install jupyter
+          pip install jupyter pandas
       - name: Render and publish
         run: quarto render
       - name: Upload website
