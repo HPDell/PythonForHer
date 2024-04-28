@@ -258,3 +258,11 @@ with open("./assets/demo_json_out.json", mode="w") as fout:
 ```{python}
 print(json.dumps(demo_data, ensure_ascii=False, indent=4))
 ```
+
+# 下节
+
+网络
+
+- 请求、响应
+- 头、体
+- 数据和 Cookie
