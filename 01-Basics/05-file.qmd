@@ -39,9 +39,7 @@ JPG 图片的后缀修改成 `.ai` 并不代表它就变成了 Adobe Illustrator
 - 也可以根据自己的需要设定一些格式，但通常情况下用已经定义好的格式比较方便。
 :::
 
-# 文件读写
-
-## 一般步骤
+## 文件读写
 
 几乎任何文件读写操作都要遵循以下几个步骤：
 
@@ -51,7 +49,9 @@ JPG 图片的后缀修改成 `.ai` 并不代表它就变成了 Adobe Illustrator
 - 操作文件：根据申请的读写权对文件进行操作。
 - 关闭文件：这一步非常重要。只有关闭了文件之后文件才能被其他程序使用，否则其他程序只有等当前程序退出了。通常操作完文件后直接关闭文件。
 
-## 纯文本文件
+# 纯文本文件
+
+## 打开并读取
 
 Python 中自带纯文本文件的读写函数 `open()` ，用于打开文件。
 
@@ -68,7 +68,7 @@ with open("./assets/demo.txt") as file:
         print(row.strip())
 ```
 
----
+## 写入文件
 
 `print` 就可以用来写入文件，参数 `file` 就可以指定输出位置。如果不指定，就是标准输出，一般情况下是控制台。
 
@@ -92,8 +92,98 @@ with open("./assets/out.txt") as fout:
         print(row.strip())
 ```
 
-## CSV 文件
+# CSV 文件
+
+## 文件格式
 
 其实上述文件就已经是逗号分隔值文件，只是我们是按照纯文本文件的方式读取的。
-Python 提供了一个读写 CSV 文件的包。
+Python 提供了一个读写 CSV 文件的包 `csv`。
 
+::: {.callout-note title="CSV 文件格式"}
+CSV 格式没有明文规定的规范，但是有一定的通用规范。大致上：
+
+- 第一行是表头，用逗号分割每个列名（也称字段名）
+- 后续每行代表一条记录，各个列的属性以逗号分隔，与列名对应
+- 如果某个字段包含 `,` （分隔符），字段值用 `""` 包裹
+:::
+
+包 `csv` 提供了两种读取数据的方法，一种将每行解析为列表，另一种将每行解析为字典。
+
+## 文件读取
+
+不论是哪种读取方法，都需要打开文件并创建一个“读取器”。
+
+```{python}
+import csv
+with open("./assets/demo.txt", newline='') as fin:
+    reader = csv.reader(fin)
+    for row in reader:
+        print(f"- 《{row[0]}》（{row[1]}年）")
+with open("./assets/demo.txt", newline='') as fin:
+    reader = csv.DictReader(fin)
+    for row in reader:
+        print("* 《{title}》（{year}年）".format_map(row))
+```
+
+## 文件写入
+
+写文件的方法也是类似的，需要创建一个写入器。这里就以字典式为例。
+
+```{python}
+demo_data = {
+    "title": ["与凤行", "风吹半夏"],
+    "year": [2024, 2022]
+}
+```
+
+```{python}
+import csv
+with open("./assets/demo_dict_writer_out.csv", mode="w", newline="") as fout:
+    writer = csv.DictWriter(fout, demo_data.keys())
+    writer.writeheader()
+    for row in zip(*demo_data.values()):
+        writer.writerow({
+            "title": row[0],
+            "year": row[1]
+        })
+```
+
+## 读写器的选择
+
+- 如果文件描述的对象类似于字典，那么字典式读写器更方便。类似于字典的对象的特点是不同字段之间性质差别很大，但字段本身一一对应。
+- 如果文件没有表头，而且自定义表头是可行的，那字典式读写器还是要更方便一些。
+- 如果文件描述的不同对象有不同的字段，那么字典式读写器已经不再适用了。
+- 如果文件描述的对象本身就类似于列表，比如一个时间序列或矩阵，那么列表式读写器更方便。
+
+## 更高级的工具：Pandas
+
+Python 自带的 csv 包只提供了比较基础的操作 CSV 文件的功能，主要是文本处理的功能。
+但是第三方的 Pandas 包提供了更强大的功能，包括解析、筛选、变换、聚合等。
+
+::: {.columns}
+::: {.column width="52%"}
+
+```{python}
+import pandas as pd
+d = pd.read_csv("./assets/demo.txt")
+d.head(2)
+```
+
+```{python}
+d['year'].min()
+```
+
+:::
+::: {.column width="48%"}
+
+```{python}
+d['actor'] = "赵丽颖"
+d.head(2)
+```
+
+```{python}
+d.count()
+```
+
+:::
+::: 
