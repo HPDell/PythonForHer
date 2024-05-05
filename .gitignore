@@ -162,5 +162,4 @@ cython_debug/
 # Quarto things
 _site
 /.quarto/
-_freeze
 .ipynb
