@@ -63,7 +63,6 @@ sequenceDiagram
 但本质上，请求和响应都是按照一定格式发送的数据。
 只要我们按照这种格式发送数据，就可以实现交互。
 
-
 ## 统一资源路径（URL）
 
 互联网上的资源非常多，计算机是怎么知道要向哪里发送请求呢？
@@ -144,6 +143,16 @@ URL 中使用 `/` 作为路径的分割符。
 
 除了这些格式以外，每个服务都可以以自己的方式处理数据，所以需要研究页面，对症下药。
 
+## 请求方式
+
+发送请求时，除了要指定请求地址，还要指定请求方式（Method）。
+常用的请求方式有
+
+- `GET`: 通常表示“仅获取”。是一般 HTTP 请求最常用的方式。在 REST 接口中表示“查询”。
+- `POST`: 通常表示“提交”，提交表单数据时常用这个方式。在 REST 接口中表示“添加”数据。
+- `PUT`: 常用于 REST 格式的网络接口中，用于表示“修改”数据。
+- `DELETE`: 常用于 REST 格式的网络接口中，用于表示“删除”数据。
+
 ## 响应数据
 
 ### HTML 响应
@@ -175,6 +184,25 @@ URL 中使用 `/` 作为路径的分割符。
 ```json
 { "code":99,"msg":"您的账号信息过期，请重新登录",
   "data":null,"help":"","dom":"","infocode":99 }
+```
+
+---
+
+下面是一个 XML 响应的例子
+
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<rss version="2.0">
+  <channel>
+    <title>Mikan Project - 我的番组</title>
+    <description>Mikan Project - 我的番组</description>
+    <item>
+      <guid isPermaLink="false">[银色子弹字幕组]</guid>
+      <title>[银色子弹字幕组]</title>
+      <description>[银色子弹字幕组][198.1MB]</description>
+    </item>
+  </channel>
+</rss>
 ```
 
 ## 头和体
@@ -235,3 +263,228 @@ HTTP 协议有一大特点：“无状态”。任何两次 HTTP 请求和响应
 
 Cookie 就是一种保存必要数据的方法。
 每次发送请求时，Cookie 都会自动放在请求头中发送。
+
+# 网络编程
+
+使用 `urllib3` 库发送请求和处理响应。
+
+## 确定 URL
+
+只有确定了 URL ，才能使用库发送请求。
+通常有两种方式：根据文档构造、从页面获取。
+
+
+---
+
+### 根据文档构造
+
+适用于网络接口，有文档说明接口如何使用。
+例如，查看“高德地图搜索 POI^[https://lbs.amap.com/api/webservice/guide/api/search]” 的接口文档
+
+
+```{python}
+base_url = 'https://restapi.amap.com'
+query = {
+  'keywords': '北京大学',
+  'city': 'beijing',
+  'offset': 20,
+  'page': 1,
+  'extensions': 'all'
+}
+query_string = '&'.join([f'{k}={v}' for k, v in query.items()])
+f'{base_url}/v3/place/text?{query_string}'
+```
+
+---
+
+有一个库函数可以直接实现这个过程，并且进行了额外的处理。
+
+
+```{python}
+from urllib.parse import urlencode
+query_string = urlencode(query)
+print(f'{base_url}/v3/place/text?{query_string}')
+```
+
+::: {.callout-tip title="转义字符"}
+在 URL 中一些特殊字符（如 `, + |` 等）需要使用转义字符表示，避免产生冲突。
+例如如果参数值有 `&` 就需要转义，否则就会被认为是一个新的参数。
+而且早期 URL 仅支持 ASCII 编码，像中文这样无法用 ASCII 码表示的就只能进行转义。
+:::
+
+---
+
+### 从页面获取
+
+如果不是访问接口，而是直接访问页面，那么页面中就会包含很多链接。
+例如下面这个网页每个房源的标题就都包含一个链接。
+
+::: {.columns}
+::: {.column width="40%"}
+
+![](assets/FangList.png)
+
+:::
+::: {.column width="60%"}
+
+```html
+<dd>
+  <h4 class="clearfix">
+    <a ps="1_1_60" href="/chushou/3_183860422.htm" target="_blank" data_channel="2,2"
+      title="小两口房,低价出售,好房不等人,先到先得!!">
+      <span class="tit_shop"> 小两口房,低价出售,好房不等人,先到先得!!</span>
+    </a>
+  </h4>
+  <p class="tel_shop"> 1室1厅 <i>|</i> 59.99㎡ <i>|</i>
+    <a class="link_rk" href="//baike.fang.com/item/中层/12851744" target="_blank">中层</a>
+    （共11层） <i>|</i> 西向 <i>|</i> 2012年建 <i>|</i>
+    <span class="people_name">
+      <a nofollow="" href="/agentshop/1165372.html"
+        title="访问[李庆孟]的个人网上店铺，查看更多房源" target="_blank">李庆孟
+      </a>
+    </span>
+  </p>
+</dd>
+```
+
+:::
+:::
+
+## 发送请求
+
+`urllib3` 包中的 `request` 函数负责发送请求并解析 HTTP 响应。
+
+```{python}
+#| cache: true
+import urllib3
+res_hp_list = urllib3.request("GET", "https://zz.esf.fang.com/")
+if res_hp_list.status == 200:
+  print(res_hp_list.data[:1000].decode())
+```
+
+---
+
+### 带参数的请求
+
+```{python}
+#| cache: true
+from pathlib import Path
+res_hp_item = urllib3.request(
+  "GET",
+  "https://zz.esf.fang.com/chushou/3_183860422.htm",
+  fields={'channel': '2,2', 'psid': '1_1_60'}
+)
+if res_hp_item.status == 200:
+  print(res_hp_item.data[:1000].decode())
+```
+
+---
+
+### 带参数的 POST 请求
+
+如果是 POST 请求，那么查询字符串只能手动生成
+
+```python
+encoded_args = urlencode({"arg": "value"})
+url = "https://httpbin.org/post?" + encoded_args
+resp = urllib3.request("POST", url, fields={"field": "value"})
+```
+
+此时 `fields` 参数的值将作为 FormData 格式的请求体传输。
+
+### 传递 JSON 数据
+
+如果请求中需要发送 JSON 数据，使用 `json` 参数
+
+```python
+resp = urllib3.request(
+    "POST",
+    "https://httpbin.org/post",
+    json={"attribute": "value"},
+    headers={"Content-Type": "application/json"}
+)
+```
+
+## 处理响应
+
+`request()` 函数的返回值就是解析后的响应，通过检查 `status` 和 `data` 就可以获取状态码和响应数据。
+
+### 处理状态码
+
+```{python}
+res_test_status = urllib3.request(
+  "GET",
+  "https://httpbin.org/post"
+)
+if res_test_status.status == 200:
+  print("Success")
+else:
+  print(f"Status: {res_test_status.status}")
+```
+
+---
+
+### 解析 JSON 响应
+
+通常情况下，直接以字符串的方式处理响应体是非常困难的。
+由于响应体大多都遵循一定的格式，所以可以将其解析为相应的类对象，则会更方便，这个过程是“反序列化”。
+JSON 格式的响应体可以直接用 `.json()` 函数转换为字典对象，
+
+```{python}
+res_test_json = urllib3.request(
+  "GET",
+  "https://api.xygeng.cn/one"
+)
+if res_test_json.status == 200:
+  print(res_test_json.json())
+```
+
+---
+
+### 解析 HTML 响应
+
+HTML 本身是一种 XML 格式的扩展，通常我们使用 `parsel` 等库进行解析，
+使用 XPATH 或者 CSS Selector 提取数据。
+
+```{python}
+from parsel import Selector
+if res_hp_list.status == 200:
+  s = Selector(text=res_hp_list.data.decode())
+  hp_list = s.xpath('//div[@class="shop_list shop_list_4"]/dl/dd/h4/a/span/text()')
+  print([x.get().strip() for x in hp_list[:5]])
+```
+
+```{python}
+if res_hp_list.status == 200:
+  s = Selector(text=res_hp_list.data.decode())
+  hp_pages = s.css('div.shop_list dl dd h4 a::attr(href)').getall()
+  print(hp_pages[:5])
+```
+
+---
+
+### 反序列化为类对象
+
+如果返回值不是 JSON 格式而是 XML 格式，那么就不能直接转化为字典了。
+有的时候字典使用起来不太方便，例如要不断地查看返回样例确定返回数据的结构以确定键名。
+这时可以使用 `xsdata` 包提供的反序列化的功能将返回值直接转化为 Python 类对象。
+
+```python
+from xsdata.formats.dataclass.parsers import XmlParser
+from xsdata.formats.dataclass.parsers.config import ParserConfig
+
+@dataclass
+class RSS:
+    channel: RSSChannel = field(metadata={'type': 'Element'})
+
+def feed_parse(feed: FeedSource):
+    rss_res: res.HTTPResponse = http.request('GET', feed.url)
+    if rss_res.status == 200:
+        rss_body = ''.join([x for x in rss_res.data.decode() if x.isprintable()])
+        rss = xmlparser.from_string(rss_body, RSS)
+        torrent_upload_batch(rss.channel.item, feed)
+```
+
+# 案例：高德地图 POI 获取
+
+
