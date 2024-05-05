@@ -10,8 +10,10 @@ website:
     contents: 
       - text: 简介
         file: index.qmd
-      - section: Python 基础
+      - section: 基础
         contents: 01-Basics/*
+      - section: 应用
+        contents: 01-Application/*
   page-navigation: true
 
 format:

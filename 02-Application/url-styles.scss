@@ -1,0 +1,32 @@
+/*-- scss:rules --*/
+
+div.url {
+    text-transform: none;
+    text-wrap: wrap;
+    white-space-collapse: collapse;
+    font-family: var(--r-code-font);
+
+    span.p {
+        color: darksalmon;
+    }
+
+    span.d {
+        color: darkcyan;
+    }
+
+    span.l {
+        color: darkkhaki;
+    }
+
+    span.q {
+        color: darkseagreen;
+
+        span.k {
+            color: darkorange;
+        }
+
+        span.v {
+            color: darkturquoise
+        }
+    }
+}
