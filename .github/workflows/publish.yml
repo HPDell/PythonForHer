@@ -19,7 +19,7 @@ jobs:
           python-version: '3.10'
       - name: Install Dependencies
         run: |
-          pip install jupyter pandas urllib3 urllib parsel xsdata
+          pip install jupyter pandas urllib3 parsel xsdata
       - name: Render and publish
         run: quarto render
       - name: Upload website
