@@ -4,7 +4,8 @@ description: "与外部世界交互"
 format:
   revealjs: 
     theme: [dark, url-styles.scss]
-            
+execute: 
+  cache: true
 ---
 
 # 网络基础
@@ -487,4 +488,169 @@ def feed_parse(feed: FeedSource):
 
 # 案例：高德地图 POI 获取
 
+## 高德地图 API
 
+### 什么是 API
+
+::: {.columns}
+::: {.column}
+
+API 的全称是“应用程序编程接口”，通常是指软件与软件之间的交互方式，通常由一个程序（调用方）通过接口调用另一个程序。
+“接口”类似于一种规范，调用方只要按照这种规范使用这个接口，就能实现相应的功能，而不需要关心这个功能具体是如何实现的。
+
+:::
+::: {.column}
+
+![](./assets/HDMI.jpg)
+
+图为硬件接口，但与软件接口的概念类似。
+
+:::
+:::
+
+---
+
+### 高德开放平台
+
+::: {.columns}
+::: {.column}
+
+大多数手机软件之所以可以工作，是因为有服务器提供了接口（也称服务），使很多操作可以通过服务器进行。
+高德将高德地图所使用的一些接口开放了出来，使得其他软件也可以使用，这就是高德开放平台。
+
+:::
+::: {.column}
+
+![](./assets/amap-lbs.png)
+
+:::
+:::
+
+若要使用高德开放平台提供的服务，需要先进行开发者认证，并创建密钥（key）。
+
+## 设计思路
+
+::: {.columns}
+::: {.column}
+
+流程图可以帮助我们理清爬虫编写的思路。
+
+- 城市和类别需要通过编码表获取
+- 通过不断构造 URL 中的查询字符串就能不断获取下一页
+- 总数可以通过第一页中的结果得知
+- 所有数据可以保存成 CSV 文件
+
+:::
+::: {.column}
+
+```{mermaid}
+%%| echo: false
+flowchart TD
+  A[确定城市和类别] --> B
+  B[获取第1页并提取总数] --> C
+  C{是否已获取所有 POI} -->|是| D
+  C -->|否| E
+  D[获取下一页] --> C
+  E[保存所有数据]
+```
+
+:::
+:::
+
+## 基本爬虫
+
+### POI 分类编码和城市编码
+
+POI 分类编码分为：大类、中类、小类。
+每一级用两位数字进行编码，例如“公共停车场”的编码是 `150904`，`15` 表示“交通设施服务”，`09` 表示停车场，`04` 表示公共停车场。
+
+::: {.callout-tip}
+由于高德 POI 查询超过 100 页的时候会有问题，所以通常我们选择最相关的中类和小类，以减少该类 POI 的数量。
+:::
+
+城市可以直接使用中文或拼音，也可以使用编码，如郑州为 `410100` 。
+
+---
+
+### 获取一页数据
+
+
+```{python}
+from pathlib import Path
+from urllib3 import request
+
+MY_KEY = Path('./key_amap.txt').read_text().strip()
+GET = "GET"
+BASE_URL = 'https://restapi.amap.com/v3/place/text'
+BASE_QS = {
+  'key': MY_KEY,
+  'types': '150900',
+  'city': '410100',
+  'citylimit': True,
+  'offset': 20
+}
+
+def get_page(page):
+  resp = request(GET, BASE_URL, fields={
+    **BASE_QS,
+    'page': page
+  })
+  if resp.status == 200:
+    res = resp.json()
+    if res['status'] == "1":
+      total_count = res['count']
+      pois = res['pois']
+      return (int(total_count), pois)
+    else:
+      raise ValueError("Response status is zero", res['info'])
+  else:
+    raise ValueError("Request failed", resp.status)
+
+total, pois = get_page(1)
+",".join([x['name'] for x in pois[:5]])
+```
+
+---
+
+### 整体逻辑
+
+```{python}
+import json
+from time import sleep
+
+def page_num(page_size, total):
+  return total // page_size + int(total % page_size > 0)
+
+def get_all():
+  total_count, pois = get_page(1)
+  pages = page_num(BASE_QS['offset'], total_count)
+  for i in range(2, pages + 1):
+    pois.extend(get_page(i)[1])
+    sleep(0.1)
+  Path("./assets/parkings.json").write_text(json.dumps(pois, ensure_ascii=False))
+
+get_all()
+```
+
+---
+
+### 检查数据
+
+```{python}
+poi_data = json.loads(Path("./assets/parkings.json").read_text())
+for item in poi_data[:10]:
+  print('{id},{name},{location}'.format_map(item))
+```
+
+
+## 改进爬虫
+
+现在这个爬虫有几个问题：
+
+- 没有进行异常处理，一旦无法正常获取数据，爬虫会终止。
+- 所有数据在爬取完毕才保存，一旦中间出现异常，所有数据都会丢失（即时存档）。
+- 爬虫中断后，无法回复爬虫，只能从头开始爬取（断点续爬）。
+- 爬虫只适用于这一种情况，如果要换一个城市或类型，则只能修改源代码（参数化）。
+- key 的调用次数有上限，无法利用多个 key 提高每日爬取量。
+
+这些问题将在后面逐步解决。
