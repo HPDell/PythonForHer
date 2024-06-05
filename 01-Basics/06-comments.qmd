@@ -1,0 +1,209 @@
+---
+title: "注释和注解"
+description: "给代码一些说明"
+---
+
+# 注释
+
+## 单行注释
+
+任何一行如果出现了字符 `#`，那么后面的字符就会被认为是注释。
+**注释的部分不会被执行。**
+
+```{python}
+actor = '赵丽颖'  # 设置目标
+print(actor)
+```
+
+上面 `# 设置目标` 的部分就是注释。
+
+::: {.callout-important}
+一个 `#` 只能将所在行后面的字符标记为注释，无法影响下一行。
+如果要在下一行继续注释，需要在下一行也插入一个 `#`。
+:::
+
+单行注释一般只用于解释这一行，通常附在该行的代码之后。
+
+---
+
+在编写程序时，通常会遇到一种情况，
+我们可能既不想删除某些代码，也不想执行这些代码。
+单行注释也可以用于保留某些行代码但不执行。
+这就是所谓的“将某些代码注释掉”，而不是“删掉”，使得我们可以保留代码本身。
+
+- **运行和调试**：在运行中，将输出取消掉。但是在调试时，把这些注释符号去掉，就可以直接使用这些代码了。
+
+```python
+actor = '赵丽颖'  # 设置目标
+#print(actor)
+```
+
+- **调整运行参数**：使用不同的参数（年份）运行同一段代码，只保留这次需要使用的参数，而注释其他参数。
+
+```python
+year = 2010
+# year = 2015
+# year = 2020
+```
+
+## 多行注释
+
+有时单行注释写起来会比较麻烦，需要多行来提高注释的可读性。
+这时就需要使用前后各至少三个 `'` 或 `"` 包裹起来段落进行多行注释。
+
+```python
+'''
+设置运行参数。
+这些参数可以通过外部配置文件进行设置。
+'''
+actor = '赵丽颖'  # 演员
+yaer = 2015       # 年份
+```
+
+通过配合多行注释以及单行注释，就可以给代码一个清晰的说明。
+
+## 文档字符串
+
+给我们编写的函数写注释文档是一个比较好的习惯，以防后面我们忘了这个函数的目的以及参数的作用。
+Python 给编写函数文档设定了一定的格式，使得编辑器可以识别这种格式并进行更好地代码提示。
+
+```python
+def page_num(page_size, total):
+    """
+    计算总页数。
+
+    Args:
+        page_size (int): 每页展示的项目数量
+        total (int): 项目总数量
+    
+    Returns:
+        总页数
+    """
+    return total // page_size + int(total % page_size > 0)
+```
+
+文档字符串的格式有很多。
+
+---
+
+
+```python
+def offset(page_size, page):
+    """根据页数和每页显示数量计算偏移量
+
+    :param page_size: 偏移量
+    :type page_size: int
+    :param page: 当前页码
+    :type page: int
+    """
+    return page_size * (page - 1)
+```
+
+```python
+def coords_id(loc):
+    """根据坐标生成 id
+
+    Parameters
+    ----------
+    loc : tuple[float, float]
+        坐标元组
+    
+    Returns
+    -------
+    str
+        当前坐标的 ID 值
+    """
+    return f"{round(loc[0], 6)}-{round(loc[1], 6)}"
+```
+
+# 类型注解
+
+## Python 中的类型
+
+Python 是一个弱类型语言，其本身对变量的类型没有什么要求。
+我们可以给一个变量设置任何类型的值。
+
+```python
+actor = '赵丽颖'
+print(actor)
+actor = 130493
+print(actor)
+```
+
+这样虽然非常灵活，但往往会因为类型的问题造成很多问题。
+
+```python
+page_num('10', 100)
+```
+
+上面这个代码运行就会出错，因为显然第一个参数是字符串，无法进行数学运算。
+
+## 给变量标记类型
+
+Python 现在已经支持通过类型注解明示变量和函数返回值类型。
+
+```python
+actor: str = '赵丽颖'
+def page_num(page_size: int, total: int) -> int:
+    return total // page_size + int(total % page_size > 0)
+```
+
+类型注解也可以和默认值一起设置
+
+```python
+def idw3(p1: float, p2: float, power: int=2) -> float:
+    squared_distance = (p1[0] - p2[0]) ** 2 + (p1[1] - p2[1]) ** 2
+    powered_distance = squared_distance ** (power / 2)
+    return 1 / powered_distance
+```
+
+::: {.callout-important}
+加了类型注解后，并不代表函数的参数只能接受注解的类型，依然是可以接受任何参数。
+但这给我们编程时提供了很多帮助。
+:::
+
+---
+
+### Typing 包
+
+这个包提供了一些用在注解中的类型，让我们可以更好方便地写注解。
+
+```{python}
+from typing import Optional, Union, Tuple
+class Property:
+    def __init__(self,
+                 name: str,
+                 price: Union[int, float],
+                 address: Optional[str],
+                 coords: Tuple[float, float]):
+        self.name = name
+        self.price = price
+        self.address = address
+        self.coords = coords
+```
+
+新版本的 Python 也支持直接使用 `tuple` `list` 等写注解，而不用从 Typing 包导入。
+
+---
+
+### 泛型
+
+泛型本身是强类型语言的概念，目的是使某个类支持多种类型的变化。
+但是 Python 本身就是动态类型，从概念上不需要泛型。
+然而通常我们会在类型注解中使用泛型，例如上面的 `Tuple[int, float]`，
+`Tuple` 本身是泛型，我们通过使用 `[]` 指定具体的类型。
+
+### 鸭子类型
+
+虽然我们可以使用类型注解来标注函数类型，但也并非只能使用我们标注的类型。
+事实上只要某种类型支持函数中所用的这个变量的方法或属性就可以了，而不一定要求类型名一样。
+
+> 如果一个动物看起来像鸭子，走起来像鸭子，叫起来像鸭子，那就认为它是鸭子。
+
+# 下节
+
+网络编程
+
+- 基础
+- 网络编程
+- 编写爬虫

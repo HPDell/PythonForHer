@@ -261,8 +261,7 @@ print(json.dumps(demo_data, ensure_ascii=False, indent=4))
 
 # 下节
 
-网络
+注释和注解
 
-- 请求、响应
-- 头、体
-- 数据和 Cookie
+- 注释
+- 类型注解
