@@ -19,12 +19,12 @@ website:
 format:
   html:
     theme:
-      dark: darkly
-      light: flatly
+      dark: [darkly, public/url-styles.scss]
+      light: [flatly, public/url-styles.scss]
     number-sections: true
     toc: true
   revealjs:
-    theme: night
+    theme: [dark, public/url-styles.scss]
     chalkboard: true
     width: 1200
     height: 700
