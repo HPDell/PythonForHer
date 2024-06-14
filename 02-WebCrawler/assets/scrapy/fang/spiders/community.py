@@ -9,11 +9,6 @@ from fang.items import CommunityItem
 
 class CommunityListSpider(Spider):
     name = "community_list"
-    feed = {
-        "community_list.json": {
-            "format": "json"
-        }
-    }
     custom_settings = {
         "FEEDS": {
             "community_list.json": {
@@ -24,7 +19,7 @@ class CommunityListSpider(Spider):
     }
 
     start_urls = [
-        "https://zz.esf.fang.com/housing/__0_3_0_0_62_0_0_0/"
+        "https://zz.esf.fang.com/housing/"
     ]
 
     def parse(self, response: Response, **kwargs: Any) -> Any:
