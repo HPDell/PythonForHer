@@ -12,7 +12,7 @@ website:
         file: index.qmd
       - section: 基础
         contents: 01-Basics/*
-      - section: 应用
+      - section: 网络爬虫
         contents: 02-WebCrawler/*
   page-navigation: true
 
